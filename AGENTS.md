@@ -39,7 +39,7 @@
 ## Gotchas
 
 - This branch targets AI SDK v7 / provider spec **V4** (`LanguageModelV4`, `specificationVersion = "v4"`). Do not copy types or APIs from older `LanguageModelV1`-style providers.
-- Chat requests go to `/v1` by default; `settings.version: "v2"` switches to `/v2` (open-weight models live on v2). `sarvam-105b-conversations` is v1-only.
+- Chat requests go to `/v2` by default; `settings.version: "v1"` switches `sarvam-105b` and `sarvam-105b-conversations` to the legacy `/v1` endpoint. Open-weight models are v2-only.
 - Settings merge order is `built-in option -> providerOptions.sarvam -> model-constructor settings`, so constructor settings win over per-call `providerOptions`.
 - The provider sends the key as both `Authorization: Bearer` and `api-subscription-key`; auth comes from `SARVAM_API_KEY` unless `apiKey` is passed.
 - `bun run build` must succeed for published behavior: `dist/` is the package output, and `package.json` exports only `.` and `./info`. Never edit `dist/` by hand.

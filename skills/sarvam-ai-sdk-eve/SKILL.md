@@ -61,7 +61,7 @@ SarvamTranslationModelInfo["mayura:v1"].max_input_length;        // 1000
 | **`sarvam-105b-conversations` is 32K** | If you use it, read its `context_window` (32 000) rather than reusing 128 000. |
 | **`/info` is a subpath export** | Import from `sarvam-ai-sdk/info`, not the package root. It ships as its own entry point. |
 | **Reasoning still applies** | The wrapped model keeps Sarvam's default reasoning. Set `reasoning_effort` on the model constructor if you need deterministic latency. |
-| **`sarvam-105b-conversations` cannot use v2** | Only `sarvam-105b` can switch to `version: "v2"`. |
+| **Chat uses `/v2`** | Every chat model defaults to `/v2`; `version: "v1"` is only for the legacy `sarvam-105b` endpoint. |
 
 ## Docs
 

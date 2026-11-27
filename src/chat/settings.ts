@@ -13,45 +13,44 @@ import { sarvamErrorDataZodSchema } from "../error";
 export type SarvamChatModelId = "sarvam-105b" | "sarvam-105b-conversations";
 
 /**
- * @description Open weight models
+ * @description Serverless open-weight models. Provisioned Throughput models
+ * (enabled per organisation) can still be passed as a string.
  * @see https://docs.sarvam.ai/api/token-factory/models
  */
 export type OpenWeightModelId =
 	| "glm5.3"
 	| "glm5.3-flash"
-	| "qwen38-27b"
 	| "gemma4"
-	| "kimi-k3.1-pro"
-	| "deepseekv4-pro"
-	| "deepseekv4.1-flash-1017";
+	| "deepseekv4.1-flash-1017"
+	| "deepseekv4.1-flash-1017-interactive";
 
 export type ChatModelId = SarvamChatModelId | OpenWeightModelId | (string & {});
 
 export type ChatSettings<T extends ChatModelId = ChatModelId> = {
 	/**
-	 * Alongside its own models, Sarvam serves a small set of open-weight models.
+	 * Chat API version.
 	 *
-	 * Open-weight models are served on v2.
-	 *
-	 * Sarvam chat models are on v1.
+	 * Every chat model, Sarvam and open-weight, is served on the OpenAI-compatible
+	 * `/v2` endpoint. `/v1` is the legacy endpoint and serves only `sarvam-105b`
+	 * and `sarvam-105b-conversations`.
 	 *
 	 * @see https://docs.sarvam.ai/api/token-factory/models
 	 *
-	 * @default "v1"
+	 * @default "v2"
 	 */
-	version?: T extends "sarvam-105b-conversations"
-		? "v1"
-		: T extends OpenWeightModelId
-			? "v2"
-			: "v1" | "v2";
+	version?: T extends OpenWeightModelId ? "v2" : "v1" | "v2";
 	/**
 	 * The effort to use for reasoning.
 	 *
-	 * Can be disabled by explicitly setting to "none".
+	 * Supported values vary by model. `"none"` turns reasoning off on models
+	 * that allow it (`sarvam-105b`, `deepseekv4.1-flash-1017`). `"max"` is
+	 * accepted by the GLM, Gemma and DeepSeek models.
 	 *
-	 * @default "medium"
+	 * Leave it unset to use the model's default effort.
+	 *
+	 * @see https://docs.sarvam.ai/api/token-factory/models#reasoning
 	 */
-	reasoning_effort?: "none" | "low" | "medium" | "high";
+	reasoning_effort?: "none" | "low" | "medium" | "high" | "max";
 
 	/**
 	 * If set to true, the model response will be wiki grounded.
@@ -93,8 +92,7 @@ export const chatSettingsSchema = lazySchema(() =>
 	zodSchema(
 		z.object({
 			reasoning_effort: z
-				.enum(["none", "low", "medium", "high"])
-				.transform((re) => (re === "none" ? null : re))
+				.enum(["none", "low", "medium", "high", "max"])
 				.nullish(),
 			wiki_grounding: z.boolean().nullish(),
 			n: z.number().min(1).max(128).nullish(),

@@ -36,8 +36,8 @@ export function createSarvam(options: SarvamProviderSettings = {}) {
 		new SarvamChatLanguageModel(modelId, settings, {
 			provider: "sarvam.chat",
 			url: ({ path }) => {
-				if (settings.version === "v2") return `${baseURL}/v2${path}`;
-				return `${baseURL}/v1${path}`;
+				if (settings.version === "v1") return `${baseURL}/v1${path}`;
+				return `${baseURL}/v2${path}`;
 			},
 			headers: getHeaders,
 			fetch: options.fetch,
