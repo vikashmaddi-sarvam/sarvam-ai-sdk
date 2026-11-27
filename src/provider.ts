@@ -15,6 +15,8 @@ import type { SarvamProvider } from "./type";
 export function createSarvam(options: SarvamProviderSettings = {}) {
 	const baseURL =
 		withoutTrailingSlash(options.baseURL) ?? "https://api.sarvam.ai";
+	const chatBaseURL =
+		withoutTrailingSlash(options.chatBaseURL) ?? `${baseURL}/v2`;
 
 	const getApiKey = () =>
 		loadApiKey({
@@ -29,6 +31,7 @@ export function createSarvam(options: SarvamProviderSettings = {}) {
 			Authorization: `Bearer ${apiKey}`,
 			"api-subscription-key": apiKey,
 			"User-Agent": "sarvam-vercel-sdk",
+			"X-Sarvam-Integration": "sarvam-vercel-sdk",
 			...options.headers,
 		};
 	};
@@ -36,7 +39,7 @@ export function createSarvam(options: SarvamProviderSettings = {}) {
 	const createChatModel = (modelId: ChatModelId, settings: ChatSettings = {}) =>
 		new SarvamChatLanguageModel(modelId, settings, {
 			provider: "sarvam.chat",
-			url: ({ path }) => `${baseURL}/v1${path}`,
+			url: ({ path }) => `${chatBaseURL}${path}`,
 			headers: getHeaders,
 			fetch: options.fetch,
 		});

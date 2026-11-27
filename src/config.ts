@@ -70,6 +70,20 @@ export interface SarvamProviderSettings {
 	baseURL?: string;
 
 	/**
+	 * Base URL for chat completion requests.
+	 *
+	 * Defaults to the OpenAI-compatible `/v2` endpoint, which serves
+	 * `sarvam-105b`, `sarvam-105b-conversations`, `glm5.3`, `glm5.3-flash`,
+	 * `gemma4`, `deepseekv4.1-flash-1017`, and the other Token Factory models.
+	 *
+	 * Set this to `https://api.sarvam.ai/v1` only when you need the legacy
+	 * `/v1` endpoint.
+	 *
+	 * @default `${baseURL}/v2`
+	 */
+	chatBaseURL?: string;
+
+	/**
 	 * API key for authenticating requests.
 	 * @default process.env.SARVAM_API_KEY
 	 */
@@ -80,7 +94,8 @@ export interface SarvamProviderSettings {
 	 * @default
 	 * Authorization: `Bearer ${process.env.SARVAM_API_KEY}`,
 	 * "api-subscription-key": process.env.SARVAM_API_KEY,
-	 * "User-Agent": "sarvam-vercel-sdk"
+	 * "User-Agent": "sarvam-vercel-sdk",
+	 * "X-Sarvam-Integration": "sarvam-vercel-sdk"
 	 */
 	headers?: Record<string, string>;
 

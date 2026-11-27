@@ -12,18 +12,18 @@ contains language model support for the Sarvam chat completion, Text-to-Speech a
 The **[Sarvam](http://sarvam.ai)** provider is available in the `sarvam-ai-sdk` module. You can install it with
 
 ```bash
-npm i sarvam-ai-sdk ai@6
+npm i sarvam-ai-sdk@0.3 ai@6
 ```
 
-> [!WARNING]
-> This package only works with Vercel AI-SDK v6, not v7. Make sure to install `ai@6` in your project.
+> [!IMPORTANT]
+> Match the Sarvam AI SDK major version to your AI SDK major version. This 0.3.x line targets AI SDK v6; the published 0.4.x line targets AI SDK v7. Installing `sarvam-ai-sdk` without a version pin resolves to 0.4.x, which is incompatible with `ai@6`.
 
 ### Version Compatibility
 
 | Sarvam AI SDK Version | Vercel AI SDK Version |
 |-----------------------|-----------------------|
-| 0.4.x (beta)			| 7.x.x (beta)			|
-| 0.3.x (current)		| 6.x.x (current)		|
+| 0.4.x (current)		| 7.x.x (current)		|
+| 0.3.x					| 6.x.x					|
 | 0.2.x					| 5.x.x					|
 | 0.1.x					| 4.x.x					|
 
@@ -53,6 +53,32 @@ const { text } = await generateText({
 
 console.log(text); // പാചകം തുടരൂ, സുഹൃത്തുക്കളേ
 ```
+
+## Chat Completion
+
+Chat requests use the OpenAI-compatible `/v2` endpoint by default. It serves `sarvam-105b`, `sarvam-105b-conversations`, `glm5.3`, `glm5.3-flash`, `gemma4`, `deepseekv4.1-flash-1017`, and `deepseekv4.1-flash-1017-interactive`:
+
+```ts
+import { sarvam } from 'sarvam-ai-sdk';
+import { generateText } from 'ai';
+
+const { text } = await generateText({
+	model: sarvam('glm5.3', { reasoning_effort: 'high' }),
+	prompt: 'Explain quantum computing in one sentence.',
+});
+```
+
+To use the legacy `/v1` endpoint, which serves only `sarvam-105b` and `sarvam-105b-conversations`, set `chatBaseURL`:
+
+```ts
+import { createSarvam } from 'sarvam-ai-sdk';
+
+const sarvamV1 = createSarvam({
+	chatBaseURL: 'https://api.sarvam.ai/v1',
+});
+```
+
+`reasoning_effort` accepts `low`, `medium`, `high`, `max`, and `none`. Supported values vary by model: `glm5.3` and `glm5.3-flash` accept `low`, `high`, and `max`; `deepseekv4.1-flash-1017` accepts `low`, `high`, and `max`; `sarvam-105b` accepts `low`, `medium`, and `high`; `gemma4` answers directly by default and reasons when you set `low`, `high`, or `max`; `sarvam-105b-conversations` accepts the field but ignores it. `none` turns reasoning off on `sarvam-105b` and `deepseekv4.1-flash-1017`.
 
 ## Text-to-Speech
 

@@ -15,13 +15,23 @@ if (!process.env.SARVAM_API_KEY?.trim()) {
 	process.exit(1);
 }
 
-console.log("Calling sarvam-105b via AI SDK…");
+async function check(modelId: string, settings?: Parameters<typeof sarvam>[1]) {
+	console.log(`Calling ${modelId} via AI SDK /v2…`);
 
-const { text, usage } = await generateText({
-	model: sarvam("sarvam-105b"),
-	prompt: 'Reply with exactly one word: "ok"',
-});
+	const { text, usage } = await generateText({
+		model: sarvam(modelId, settings),
+		prompt: 'Reply with exactly one word: "ok"',
+	});
 
-console.log("Response:", text?.slice(0, 500) ?? "(empty)");
-console.log("Usage:", usage);
+	console.log(`${modelId} response:`, text?.slice(0, 500) ?? "(empty)");
+	console.log(`${modelId} usage:`, usage);
+
+	if (!text?.trim()) {
+		throw new Error(`${modelId} returned an empty response`);
+	}
+}
+
+await check("sarvam-105b");
+await check("glm5.3", { reasoning_effort: "low" });
+
 console.log("Smoke test passed.");

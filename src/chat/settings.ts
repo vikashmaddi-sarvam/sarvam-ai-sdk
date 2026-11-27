@@ -12,9 +12,13 @@ export type ChatModelId = "sarvam-105b" | (string & {});
 
 export type ChatSettings = {
 	/**
-	 * The effort to use for reasoning
+	 * The effort to use for reasoning.
+	 *
+	 * Supported values vary by model. `none` disables reasoning on models that
+	 * allow it, and `max` is accepted by the GLM, Gemma, and DeepSeek models on
+	 * the v2 endpoint.
 	 */
-	reasoning_effort?: "low" | "medium" | "high";
+	reasoning_effort?: "low" | "medium" | "high" | "max" | "none";
 
 	/**
 	 * If set to true, the model response will be wiki grounded.
@@ -31,7 +35,7 @@ export type ChatSettings = {
 };
 
 export const chatSettingsSchema = z.object({
-	reasoning_effort: z.enum(["low", "medium", "high"]).nullish(),
+	reasoning_effort: z.enum(["low", "medium", "high", "max", "none"]).nullish(),
 	wiki_grounding: z.boolean().nullish(),
 	n: z.number().min(1).max(128).nullish(),
 });
