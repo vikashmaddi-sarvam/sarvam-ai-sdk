@@ -57,6 +57,28 @@ const { text } = await generateText({
 console.log(text); // പാചകം തുടരൂ, സുഹൃത്തുക്കളേ
 ```
 
+## Chat Completion
+
+Chat requests use the OpenAI-compatible `/v2` endpoint (`https://api.sarvam.ai/v2/chat/completions`) by default. It serves `sarvam-105b`, `sarvam-105b-conversations`, `glm5.3`, `glm5.3-flash`, `gemma4`, `deepseekv4.1-flash-1017`, and `deepseekv4.1-flash-1017-interactive`:
+
+```ts
+import { sarvam } from "sarvam-ai-sdk";
+import { generateText } from "ai";
+
+const { text } = await generateText({
+	model: sarvam("glm5.3", { reasoning_effort: "high" }),
+	prompt: "Explain quantum computing in one sentence.",
+});
+```
+
+`reasoning_effort` accepts `"none"`, `"low"`, `"medium"`, `"high"`, and `"max"`. Supported values vary by model: `glm5.3` and `glm5.3-flash` accept `low`, `high`, and `max`; `deepseekv4.1-flash-1017` accepts `low`, `high`, and `max`; `sarvam-105b` accepts `low`, `medium`, and `high`; `gemma4` answers directly by default and reasons when you set `low`, `high`, or `max`; `sarvam-105b-conversations` accepts the field but ignores it. `"none"` turns reasoning off on `sarvam-105b` and `deepseekv4.1-flash-1017`. The AI SDK `reasoning` call option works too.
+
+To use the legacy `/v1` endpoint, which serves only `sarvam-105b` and `sarvam-105b-conversations`, set `version: "v1"`:
+
+```ts
+sarvam("sarvam-105b", { version: "v1" });
+```
+
 ## Text-to-Speech
 
 ```ts
@@ -270,8 +292,9 @@ createSarvam({ apiKey: "your_api_key" })
 
 // Text-to-Text + Chat Completion
 sarvam("sarvam-105b-conversations");
+sarvam("glm5.3");
 sarvam.languageModel("sarvam-105b", {
-	version: "v2",
+	version: "v1", // legacy endpoint; defaults to "v2"
 });
 
 // Text-to-Text + Transliteration

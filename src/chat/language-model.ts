@@ -95,7 +95,7 @@ export class SarvamChatLanguageModel implements LanguageModelV4 {
 			provider: "sarvam",
 			providerOptions: {
 				sarvam: {
-					reasoning_effort: reasoning,
+					reasoning_effort: toSarvamReasoningEffort(reasoning, warnings),
 					...providerOptions?.sarvam,
 					...this.settings,
 				},
@@ -331,10 +331,7 @@ export class SarvamChatLanguageModel implements LanguageModelV4 {
 
 		return {
 			stream: response.pipeThrough(
-				new TransformStream<
-					ParseResult<ChatChunk>,
-					LanguageModelV4StreamPart
-				>({
+				new TransformStream<ParseResult<ChatChunk>, LanguageModelV4StreamPart>({
 					transform(chunk, controller) {
 						// handle failed chunk parsing / validation:
 						if (!chunk.success) {
@@ -590,5 +587,38 @@ export class SarvamChatLanguageModel implements LanguageModelV4 {
 			request: { body: args },
 			response: { headers: responseHeaders },
 		};
+	}
+}
+
+/**
+ * Map the AI SDK `reasoning` call option onto Sarvam's `reasoning_effort`.
+ *
+ * `provider-default` leaves the model default in place. Sarvam has no
+ * `minimal` or `xhigh` level, so they map to the closest supported value.
+ */
+function toSarvamReasoningEffort(
+	reasoning: LanguageModelV4CallOptions["reasoning"],
+	warnings: SharedV4Warning[],
+) {
+	switch (reasoning) {
+		case undefined:
+		case "provider-default":
+			return undefined;
+		case "minimal":
+			warnings.push({
+				type: "compatibility",
+				feature: "reasoning",
+				details: 'Sarvam has no "minimal" reasoning effort; using "low".',
+			});
+			return "low";
+		case "xhigh":
+			warnings.push({
+				type: "compatibility",
+				feature: "reasoning",
+				details: 'Sarvam has no "xhigh" reasoning effort; using "max".',
+			});
+			return "max";
+		default:
+			return reasoning;
 	}
 }

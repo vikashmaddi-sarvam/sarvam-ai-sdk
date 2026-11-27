@@ -54,7 +54,7 @@ export const SarvamChatModelInfo = {
  */
 export const OpenWeightModelInfo = {
 	gemma4: {
-		context_window: 131_072,
+		context_window: 262_144,
 	},
 	"glm5.3": {
 		context_window: 1_048_576,
@@ -64,19 +64,13 @@ export const OpenWeightModelInfo = {
 		context_window: 1_048_576,
 		max_tokens: 2048,
 	},
-	"deepseekv4-pro": {
-		context_window: 1_048_576,
-		max_tokens: 2048,
-	},
 	"deepseekv4.1-flash-1017": {
 		context_window: 1_048_576,
 		max_tokens: 2048,
 	},
-	"qwen38-27b": {
-		context_window: 262_144,
-	},
-	"kimi-k3.1-pro": {
+	"deepseekv4.1-flash-1017-interactive": {
 		context_window: 1_048_576,
+		max_tokens: 2048,
 	},
 } as const satisfies Record<
 	OpenWeightModelId,

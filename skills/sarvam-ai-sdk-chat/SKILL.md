@@ -36,7 +36,7 @@ console.log(text); // പാചകം തുടരൂ, സുഹൃത്തു�
 | `sarvam-105b` | 128K | Reasoning, coding, agentic workflows |
 | `sarvam-105b-conversations` | 32K | Real-time chat, voice agents, conversational apps |
 
-`sarvam-105b-conversations` is **v1-only**. `sarvam-105b` accepts `version: "v1" | "v2"`; use `v2` only to reach the beta open-weight models (`glm5.3`, `gemma4`, `deepseekv4-flash`), which are not part of the typed model IDs. `sarvam-30b` is retired.
+Chat uses `/v2` by default for every model: `sarvam-105b`, `sarvam-105b-conversations`, `glm5.3`, `glm5.3-flash`, `gemma4`, `deepseekv4.1-flash-1017`, and `deepseekv4.1-flash-1017-interactive`. `version: "v1"` switches `sarvam-105b` and `sarvam-105b-conversations` to the legacy endpoint. `sarvam-30b` is retired.
 
 ## Streaming
 
@@ -57,8 +57,8 @@ Streaming works for chat only. Reasoning tokens arrive as `reasoning` parts befo
 
 ```ts
 sarvam("sarvam-105b", {
-  version: "v1",              // "v1" (default) | "v2"
-  reasoning_effort: "none",  // "none" | "low" | "medium" | "high"
+  version: "v2",              // "v2" (default) | "v1" (legacy)
+  reasoning_effort: "none",  // "none" | "low" | "medium" | "high" | "max"
   wiki_grounding: true,      // wiki-grounded responses
   n: 1,                      // number of completions (billed per token, keep at 1)
   extra_body: {},            // v2 only
@@ -73,10 +73,10 @@ The same keys are accepted per call in `providerOptions.sarvam`, but constructor
 | Gotcha | Detail |
 |--------|--------|
 | **Reasoning can leave `text` empty** | Sarvam models think by default. If `maxOutputTokens` is too small, reasoning consumes the budget and `finish_reason` is `"length"` with no visible text. Omit `maxOutputTokens`, set it generously (500+), or disable reasoning with `reasoning_effort: "none"`. Always tolerate an empty `text` and inspect reasoning/usage. |
-| **`reasoning_effort: "none"` disables thinking** | The SDK maps `"none"` to `null` on the wire. Other values are `"low"`, `"medium"`, `"high"`. Not `thinking: true`. |
+| **`reasoning_effort: "none"` disables thinking** | Sent as `"none"` on the wire; supported by `sarvam-105b` and `deepseekv4.1-flash-1017`. Other values are `"low"`, `"medium"`, `"high"`, `"max"`. Not `thinking: true`. |
 | **`reasoning` is not a model option** | Thinking is controlled by `reasoning_effort` (constructor) or `reasoning` on the AI SDK call options — don't pass arbitrary `thinking` keys. |
 | **`topK` is unsupported** | Passing `topK` produces an `unsupported` warning and is dropped. |
-| **`sarvam-105b-conversations` + `version: "v2"`** | Rejected — that model is fixed to v1. |
+| **Open-weight models + `version: "v1"`** | Rejected by the types — open-weight models are served only on `/v2`. |
 | **Don't use `streamText` with translation/transliteration/LID** | Those models throw on `doStream()`. See `sarvam-ai-sdk-text`. |
 | **`ai@7` expected** | `sarvam-ai-sdk` 0.4.x pairs with `ai@7`. Mixing majors breaks `LanguageModelV4`. |
 

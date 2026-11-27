@@ -62,7 +62,8 @@ Auth comes from `SARVAM_API_KEY` unless `apiKey` is passed. The provider sends t
 import { sarvam } from "sarvam-ai-sdk";
 
 sarvam("sarvam-105b");                              // chat
-sarvam("sarvam-105b", { version: "v2" });           // open-weight models live on v2
+sarvam("glm5.3");                                   // chat defaults to /v2
+sarvam("sarvam-105b", { version: "v1" });           // legacy /v1 endpoint
 sarvam.speech("bulbul:v4-flash", "hi-IN", { speaker: "aparna_hi_customer" });
 sarvam.transcription("saaras:v4");                  // language defaults to "unknown" (auto-detect)
 sarvam.translation("mayura:v1", { from: "hi-IN", to: "en-IN" });
@@ -132,10 +133,10 @@ Also exports `SarvamTranscriptionModelInfo`, `SarvamSpeechModelInfo`, `SarvamTra
 | Gotcha | Detail |
 |--------|--------|
 | **AI SDK v7 only** | Pairs with `ai@7`. Package `0.4.x` → `ai@7`; `0.3.x` → `ai@6`; `0.5.x` (beta) → `ai@8` (beta). Do not cross versions. |
-| **`sarvam-105b-conversations` is v1-only** | It cannot be switched to `version: "v2"`. Open-weight models (`glm5.3`, `gemma4`, `deepseekv4-flash`) live on v2. |
-| **Chat defaults to `/v1`** | The provider appends `/v1` for chat and switches to `/v2` only when `settings.version === "v2"`. The other endpoints (STT/TTS/translate/transliterate/LID) are unprefixed. |
+| **Open-weight models are v2-only** | `glm5.3`, `glm5.3-flash`, `gemma4`, and `deepseekv4.1-flash-1017` are served only on `/v2`. `sarvam-105b` and `sarvam-105b-conversations` also work on the legacy `/v1`. |
+| **Chat defaults to `/v2`** | The provider appends `/v2` for chat and switches to `/v1` only when `settings.version === "v1"`. The other endpoints (STT/TTS/translate/transliterate/LID) are unprefixed. |
 | **`sarvam-30b` is retired** | Don't generate code using it; use `sarvam-105b` or `sarvam-105b-conversations`. |
-| **Reasoning is on by default** | Sarvam chat models think before answering. `reasoning_effort` accepts `"none" \| "low" \| "medium" \| "high"` (`"none"` is sent as `null` to disable). Low `maxOutputTokens` can let reasoning eat the whole budget and leave `text` empty. See the chat skill. |
+| **Reasoning is on by default** | Sarvam chat models think before answering. `reasoning_effort` accepts `"none" \| "low" \| "medium" \| "high" \| "max"` (`"none"` turns reasoning off on `sarvam-105b` and `deepseekv4.1-flash-1017`). Low `maxOutputTokens` can let reasoning eat the whole budget and leave `text` empty. See the chat skill. |
 | **This package is REST-only for speech** | `speech` and `transcription` call the REST endpoints. There is no Batch API, WebSocket streaming, diarization job, or dubbing surface here — use the raw `sarvamai` SDK for those. |
 | **Translation / transliteration / LID don't stream** | Their `doStream()` throws. Use `generateText`, never `streamText`. Chat is the only streaming model. |
 | **Decisions are text/JSON only** | `sarvam.decisionModel` supports `choice`, `score`, and `boolean` questions. `box` questions and file (image) parts in `state` throw `UnsupportedFunctionalityError`. Boolean maps to Sarvam's yes/no question and returns `probability`. |
